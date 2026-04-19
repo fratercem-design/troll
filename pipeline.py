@@ -30,7 +30,8 @@ VIDEOS_FILE = "psychesnightmares_videos.json"
 TRANSCRIPTS_FILE = "transcripts.json"
 OBSIDIAN_VAULT = Path(os.environ.get("OBSIDIAN_VAULT", "/mnt/d/Obsidian Vault/AI Research"))
 CULTCODEX_URL = os.environ.get("CULTCODEX_URL", "https://cultcodex.me")
-CULTCODEX_SESSION = os.environ.get("CULTCODEX_SESSION", "")  # paste session cookie value
+CULTCODEX_SESSION = os.environ.get("CULTCODEX_SESSION", "")  # __Secure-authjs.session-token value
+CULTCODEX_CSRF = os.environ.get("CULTCODEX_CSRF", "")        # __Host-authjs.csrf-token value
 COOKIES_FILE = os.environ.get("YT_COOKIES", "youtube_cookies.txt")
 CHANNEL_NAME = "Psyche's Nightmares"
 CHANNEL_TAG = "psyches-nightmares"
@@ -161,7 +162,11 @@ def write_obsidian_notes(videos, cache):
 
 def cultcodex_login(session):
     session.cookies.set("__Secure-authjs.session-token", CULTCODEX_SESSION, domain="cultcodex.me")
-    print("cultcodex: session cookie set")
+    session.cookies.set("__Secure-authjs.callback-url", "https%3A%2F%2Fcultcodex.me%2F", domain="cultcodex.me")
+    if CULTCODEX_CSRF:
+        session.cookies.set("__Host-authjs.csrf-token", CULTCODEX_CSRF, domain="cultcodex.me")
+    session.headers["user-agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+    print("cultcodex: session cookies set")
 
 
 def enrich_for_cultcodex(video, transcript):
