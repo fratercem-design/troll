@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# pipeline generated / sensitive
+youtube_cookies.txt
+transcripts.json
+psychesnightmares_videos.json
