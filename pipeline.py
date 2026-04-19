@@ -8,8 +8,7 @@ SETUP:
        - Export → save as youtube_cookies.txt in this directory
   2. Set env vars:
        CULTCODEX_URL=https://cultcodex.me
-       CULTCODEX_EMAIL=your@email.com
-       CULTCODEX_PASSWORD=yourpassword
+       CULTCODEX_SESSION=<paste session cookie from browser DevTools>
        OBSIDIAN_VAULT=/mnt/d/Obsidian Vault/AI Research   (optional)
   3. Run: python3 pipeline.py
 """
@@ -31,8 +30,7 @@ VIDEOS_FILE = "psychesnightmares_videos.json"
 TRANSCRIPTS_FILE = "transcripts.json"
 OBSIDIAN_VAULT = Path(os.environ.get("OBSIDIAN_VAULT", "/mnt/d/Obsidian Vault/AI Research"))
 CULTCODEX_URL = os.environ.get("CULTCODEX_URL", "https://cultcodex.me")
-CULTCODEX_EMAIL = os.environ.get("CULTCODEX_EMAIL", "")
-CULTCODEX_PASSWORD = os.environ.get("CULTCODEX_PASSWORD", "")
+CULTCODEX_SESSION = os.environ.get("CULTCODEX_SESSION", "")  # paste session cookie value
 COOKIES_FILE = os.environ.get("YT_COOKIES", "youtube_cookies.txt")
 CHANNEL_NAME = "Psyche's Nightmares"
 CHANNEL_TAG = "psyches-nightmares"
@@ -162,14 +160,8 @@ def write_obsidian_notes(videos, cache):
 # ── Cultcodex ─────────────────────────────────────────────────────────────────
 
 def cultcodex_login(session):
-    r = session.post(
-        f"{CULTCODEX_URL}/api/auth/login",
-        json={"email": CULTCODEX_EMAIL, "password": CULTCODEX_PASSWORD},
-        verify=False,
-    )
-    if not r.ok:
-        raise RuntimeError(f"cultcodex login failed: {r.status_code} {r.text[:200]}")
-    print(f"cultcodex: logged in as {CULTCODEX_EMAIL}")
+    session.cookies.set("session", CULTCODEX_SESSION, domain="cultcodex.me")
+    print("cultcodex: session cookie set")
 
 
 def enrich_for_cultcodex(video, transcript):
@@ -186,8 +178,8 @@ def enrich_for_cultcodex(video, transcript):
 
 
 def push_to_cultcodex(videos, cache):
-    if not CULTCODEX_EMAIL or not CULTCODEX_PASSWORD:
-        print("CULTCODEX_EMAIL / CULTCODEX_PASSWORD not set — skipping.")
+    if not CULTCODEX_SESSION:
+        print("CULTCODEX_SESSION not set — skipping.")
         return
 
     session = requests.Session()
