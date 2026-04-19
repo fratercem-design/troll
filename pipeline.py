@@ -86,7 +86,7 @@ def fetch_all_transcripts():
     if os.path.exists(TRANSCRIPTS_FILE):
         cache = json.load(open(TRANSCRIPTS_FILE))
 
-    need = [v for v in videos if v["video_id"] not in cache]
+    need = [v for v in videos if not cache.get(v["video_id"])]
     print(f"Fetching transcripts: {len(need)} remaining of {len(videos)} total")
 
     if not os.path.exists(COOKIES_FILE):
