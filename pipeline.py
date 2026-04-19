@@ -160,7 +160,7 @@ def write_obsidian_notes(videos, cache):
 # ── Cultcodex ─────────────────────────────────────────────────────────────────
 
 def cultcodex_login(session):
-    session.cookies.set("session", CULTCODEX_SESSION, domain="cultcodex.me")
+    session.cookies.set("__Secure-authjs.session-token", CULTCODEX_SESSION, domain="cultcodex.me")
     print("cultcodex: session cookie set")
 
 
